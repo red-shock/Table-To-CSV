@@ -2,7 +2,6 @@ var keySubmit = document.getElementById('keysubmit');
 var download = document.getElementById('download');
 
 chrome.storage.local.get(['tbvalue'], function (item) {
-  console.log(Object.keys(item.tbvalue[0]));
   var keys = Object.keys(item.tbvalue[0]);
   var header = document.createElement('tr');
   for (x = 0; x < keys.length; x++) {
