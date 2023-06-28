@@ -1,5 +1,4 @@
 *.env
 .vscode
 manifest.json
-thumbnails
 *.zip
