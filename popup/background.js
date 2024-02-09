@@ -57,7 +57,8 @@ btn.addEventListener('click', async function onClick() {
 async function loadTables(){
   let queryOptions = { active: true, lastFocusedWindow: true };
   let [tab] = await chrome.tabs.query(queryOptions);
-  if (tab == undefined || tab.url.startsWith("chrome://")) {
+  console.warn(tab);
+  if (tab == undefined || tab.url.startsWith("chrome://") || tab.url.startsWith("edge://")) {
     editDropdown(true);
     console.warn("No active tab found");
     return;
