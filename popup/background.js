@@ -57,7 +57,9 @@ btn.addEventListener('click', async function onClick() {
 async function loadTables(){
   let queryOptions = { active: true, lastFocusedWindow: true };
   let [tab] = await chrome.tabs.query(queryOptions);
-  console.warn(tab);
+
+  let injectable = await checkInjectable(tab);
+
   if (tab == undefined || tab.url.startsWith("chrome://") || tab.url.startsWith("edge://")) {
     editDropdown(true);
     console.warn("No active tab found");
@@ -102,6 +104,26 @@ function editDropdown(hide){
   }
 }
 
+async function checkInjectable(tab){
+  try {
+    let injectable = await chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      func: () => {
+        if (browser.runtime.lastError) {
+          return true;
+        } else{
+          return NaN;
+        }
+        },
+    }).then(
+      res => {
+        return res[0] == undefined ? false : true;
+    });
+    return injectable;
+  } catch (err) {
+    return false;
+  }
+}
 // run when the user clicks the browser action
 (async() =>{
   await loadTables();
