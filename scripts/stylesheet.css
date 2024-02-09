@@ -104,3 +104,17 @@ select{
   background-color: #FF160A;
   color: rgba(0,0,0,0.6);
 }
+
+#tableselect {
+  margin: 10px auto;
+  display: block;
+}
+
+#transfer {
+  background-color: #680704;
+}
+
+#transfer:disabled {
+  background-color: rgba(239, 239, 239, 0.3);
+  color: rgba(16, 16, 16, 0.3);
+}
