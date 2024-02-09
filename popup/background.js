@@ -1,10 +1,10 @@
 const btn = document.getElementById('transfer');
-const input = document.getElementById('tablenum');
+const dropdown = document.getElementById('tableselect');
 
 btn.addEventListener('click', async function onClick() {
   let queryOptions = { active: true, lastFocusedWindow: true };
   let [tab] = await chrome.tabs.query(queryOptions);
-  chrome.storage.local.set({ tableIndex: input.value });
+  chrome.storage.local.set({ tableIndex: dropdown.value });
   chrome.scripting.executeScript(
     {
       target: { tabId: tab.id },
@@ -21,7 +21,6 @@ btn.addEventListener('click', async function onClick() {
                 tableIndex = 0;
               }
             }
-            console.log(tableIndex);
             keyDict = [];
             var row =
               document.getElementsByTagName('tbody')[tableIndex].children;
@@ -54,3 +53,55 @@ btn.addEventListener('click', async function onClick() {
     }
   );
 });
+
+async function loadTables(){
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  if (tab == undefined || tab.url.startsWith("chrome://")) {
+    editDropdown(true);
+    console.warn("No active tab found");
+    return;
+  }
+  chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    func: () => {
+        let tables = document.getElementsByTagName('tbody');
+        return tables.length;
+    },
+  },
+  (res) => {
+    let tableCount = res[0].result;
+    let select = document.getElementById("tableselect");
+    if (tableCount == 0) {
+      console.warn("No tables found");
+      editDropdown(true);
+      return;
+    }
+    editDropdown(false);
+    for (let i = 0; i < res[0].result; i++){
+      let option = document.createElement("option");
+      option.value = i;
+      option.text = "Table " + i;
+      select.add(option);
+    }
+  }
+  );
+}
+
+function editDropdown(hide){
+  let select = document.getElementById("tableselect");
+  if (hide) {
+    select.style.display = "none"
+    btn.textContent = "No tables to select"
+    btn.setAttribute("disabled", "")
+  } else {
+    select.style.display = "block"
+    btn.textContent = "Select Table"
+    btn.removeAttribute("disabled");
+  }
+}
+
+// run when the user clicks the browser action
+(async() =>{
+  await loadTables();
+})();
